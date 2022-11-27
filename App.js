@@ -1,15 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import ChatListItem from './src/screens/ChatListItem';
+import { StyleSheet, View } from 'react-native';
+import ChatScreen from './src/screens/ChatScreen';
 
 export default function App() {
     return (
         <View style={styles.container}>
             <StatusBar style={'auto'} />
-            <ChatListItem />
-            <ChatListItem />
-            <ChatListItem />
-            <ChatListItem />
+            <ChatScreen />
         </View>
     );
 }
@@ -17,7 +14,9 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+
+        // padding will change to safe area in future
+        paddingVertical: 50,
     },
 });
