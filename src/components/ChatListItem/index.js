@@ -1,5 +1,5 @@
 import { Image, Text, View, StyleSheet } from 'react-native';
-import React from 'react';
+import moment from 'moment';
 
 const SZ_IMG = 60;
 const SZ_SPC = 10;
@@ -13,7 +13,7 @@ const ChatListItem = ({ data }) => {
                     <Text numberOfLines={1} style={styles.txtName}>
                         {data.user.name}
                     </Text>
-                    <Text style={styles.txtTime}>{data.lastMessage.createdAt}</Text>
+                    <Text style={styles.txtTime}>{moment(data.lastMessage.createdAt).fromNow(true)}</Text>
                 </View>
                 <Text numberOfLines={2} style={styles.txtMessage}>
                     {data.lastMessage.text}
