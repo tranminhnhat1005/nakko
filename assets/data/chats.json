@@ -4,6 +4,7 @@
     "user": {
       "id": "u2",
       "name": "Lukas",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/lukas.jpeg"
     },
     "lastMessage": {
@@ -17,6 +18,7 @@
     "user": {
       "id": "u3",
       "name": "Daniil Top",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg"
     },
     "lastMessage": {
@@ -30,6 +32,7 @@
     "user": {
       "id": "u4",
       "name": "Alex",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/8.png"
     },
     "lastMessage": {
@@ -43,6 +46,7 @@
     "user": {
       "id": "u5",
       "name": "Vlad",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/jeff.jpeg"
     },
     "lastMessage": {
@@ -56,6 +60,7 @@
     "user": {
       "id": "u6",
       "name": "Elon Musk",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/elon.png"
     },
     "lastMessage": {
@@ -69,6 +74,7 @@
     "user": {
       "id": "u7",
       "name": "Adrian",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/graham.jpg"
     },
     "lastMessage": {
@@ -82,6 +88,7 @@
     "user": {
       "id": "u8",
       "name": "Borja",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/zuck.jpeg"
     },
     "lastMessage": {
@@ -95,6 +102,7 @@
     "user": {
       "id": "u9",
       "name": "Mom",
+      "status": "Hey There!",
       "image": "https://image.shutterstock.com/image-vector/super-mom-hero-superhero-cartoon-600w-720015928.jpg"
     },
     "lastMessage": {
@@ -108,6 +116,7 @@
     "user": {
       "id": "u9",
       "name": "Andrei",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/4.jpg"
     },
     "lastMessage": {
@@ -121,6 +130,7 @@
     "user": {
       "id": "u9",
       "name": "Misha",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/biahaze.jpg"
     },
     "lastMessage": {
@@ -134,6 +144,7 @@
     "user": {
       "id": "u9",
       "name": "Alina",
+      "status": "Hey There!",
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/7.png"
     },
     "lastMessage": {

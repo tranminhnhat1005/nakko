@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 const MainTabNavigator = () => {
     return (
         <Tab.Navigator
-            initialRouteName={'ChatList'}
+            initialRouteName={'Chats'}
             screenOptions={{
                 tabBarStyle: {
                     backgroundColor: 'whitesmoke',
@@ -41,9 +41,9 @@ const MainTabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name={'ChatList'}
+                name={'Chats'}
                 component={ChatListScreen}
-                options={{
+                options={({ navigation }) => ({
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name={'ios-chatbubbles-sharp'} color={color} size={size} />
                     ),
@@ -51,19 +51,19 @@ const MainTabNavigator = () => {
                         <Entypo
                             name={'new-message'}
                             size={20}
-                            style={{ marginRight: spacings.def }}
                             color={colors.blueIcon}
+                            style={{ marginRight: spacings.def }}
+                            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                            onPress={() => navigation.navigate('Contacts')}
                         />
                     ),
-                }}
+                })}
             />
             <Tab.Screen
                 name={'Settings'}
                 component={NotImplementedScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name={'ios-settings-sharp'} color={color} size={size} />
-                    ),
+                    tabBarIcon: ({ color, size }) => <Ionicons name={'ios-settings-sharp'} color={color} size={size} />,
                 }}
             />
         </Tab.Navigator>
