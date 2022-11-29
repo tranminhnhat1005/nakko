@@ -3,4 +3,5 @@ export const spacings = {
     half: 5,
     icon: 24,
     iconSm: 16,
+    avatar: 60,
 };

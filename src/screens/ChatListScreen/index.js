@@ -7,9 +7,13 @@ const ChatListScreen = () => {
     const renderItem = ({ item }) => {
         return <ChatListItem data={item} />;
     };
-    return <FlatList data={data} renderItem={renderItem} />;
+    return <FlatList style={styles.flatList} data={data} renderItem={renderItem} />;
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    flatList: {
+        backgroundColor: 'white',
+    },
+});
 
 export default ChatListScreen;

@@ -1,12 +1,20 @@
-import { Image, Text, View, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-
-const SZ_IMG = 60;
-const SZ_SPC = 10;
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { spacings } from '../../configs';
 
 const ChatListItem = ({ data }) => {
+    const navigation = useNavigation();
+
+    const onNavigate = () => {
+        const {
+            id,
+            user: { name },
+        } = data;
+        navigation.navigate('Chat', { id, name });
+    };
     return (
-        <View style={styles.viewContainer}>
+        <Pressable onPress={onNavigate} style={styles.viewContainer}>
             <Image source={{ uri: data.user.image }} style={styles.img} />
             <View style={styles.viewContent}>
                 <View style={styles.viewInfo}>
@@ -19,22 +27,22 @@ const ChatListItem = ({ data }) => {
                     {data.lastMessage.text}
                 </Text>
             </View>
-        </View>
+        </Pressable>
     );
 };
 
 const styles = StyleSheet.create({
     viewContainer: {
         flexDirection: 'row',
-        marginHorizontal: SZ_SPC,
-        marginVertical: SZ_SPC / 2,
-        height: SZ_IMG + SZ_SPC,
+        marginHorizontal: spacings.def,
+        marginVertical: spacings.half,
+        height: spacings.avatar + spacings.def,
     },
     img: {
-        width: SZ_IMG,
-        height: SZ_IMG,
-        borderRadius: SZ_IMG / 2,
-        marginRight: SZ_SPC,
+        width: spacings.avatar,
+        height: spacings.avatar,
+        borderRadius: spacings.avatar / 2,
+        marginRight: spacings.def,
     },
     viewContent: {
         flex: 1,
@@ -43,7 +51,7 @@ const styles = StyleSheet.create({
     },
     viewInfo: {
         flexDirection: 'row',
-        marginBottom: SZ_SPC / 2,
+        marginBottom: spacings.def / 2,
     },
     txtName: {
         flex: 1,

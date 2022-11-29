@@ -1,6 +1,7 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { StyleSheet, TextInput, View } from 'react-native';
 import { useState } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacings } from '../../configs';
 
@@ -13,13 +14,14 @@ const InputBox = () => {
     };
 
     return (
-        <View style={styles.viewContainer}>
-            <AntDesign name={'plus'} size={spacings.icon} color={colors.blueIcon} />
+        <SafeAreaView edges={['bottom']} style={styles.viewContainer}>
+            <AntDesign name={'plus'} size={spacings.icon} color={colors.blueIcon} style={styles.icon} />
             <TextInput
                 style={styles.txtInput}
                 placeholder={'type your message here...'}
                 value={newMessage}
                 onChangeText={setNewMessage}
+                // multiline
             />
             <MaterialIcons
                 onPress={onSend}
@@ -28,7 +30,7 @@ const InputBox = () => {
                 color={'white'}
                 style={styles.iconSend}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -50,11 +52,17 @@ const styles = StyleSheet.create({
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: 'lightgray',
     },
+    icon: {
+        width: spacings.icon,
+        height: spacings.icon,
+        alignSelf: 'center',
+    },
     iconSend: {
         backgroundColor: colors.blueIcon,
         padding: 6,
         borderRadius: 14,
         overflow: 'hidden',
+        alignSelf: 'center',
     },
 });
 
