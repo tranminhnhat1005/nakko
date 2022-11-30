@@ -9,7 +9,7 @@ const ContactListItem = ({ user }) => {
     const onNavigate = () => {};
     return (
         <Pressable onPress={onNavigate} style={styles.viewContainer}>
-            <Image source={{ uri: user.image }} style={styles.img} />
+            <Image source={{ uri: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg' }} style={styles.img} />
             <View style={styles.content}>
                 <Text numberOfLines={1} style={styles.txtName}>
                     {user.name}
