@@ -1,8 +1,10 @@
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, Entypo } from '@expo/vector-icons';
+
+import { colors, spacings } from '../configs';
 import ChatListScreen from '../screens/ChatListScreen';
 import NotImplementedScreen from '../screens/NotImplementedScreen';
-import { colors, spacings } from '../configs';
+import SettingScreen from '../screens/SettingScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -61,7 +63,7 @@ const MainTabNavigator = () => {
             />
             <Tab.Screen
                 name={'Settings'}
-                component={NotImplementedScreen}
+                component={SettingScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name={'ios-settings-sharp'} color={color} size={size} />,
                 }}

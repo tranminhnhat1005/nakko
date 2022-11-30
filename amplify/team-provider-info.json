@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nakko-staging-82232-authRole",
+      "UnauthRoleArn": "arn:aws:iam::718911333805:role/amplify-nakko-staging-82232-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::718911333805:role/amplify-nakko-staging-82232-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-nakko-staging-82232-deployment",
+      "UnauthRoleName": "amplify-nakko-staging-82232-unauthRole",
+      "StackName": "amplify-nakko-staging-82232",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:718911333805:stack/amplify-nakko-staging-82232/f8b0f750-6fbe-11ed-980c-0a86adb1aeb4",
+      "AmplifyAppId": "d13cwrfz1hyhk"
+    },
+    "categories": {
+      "auth": {
+        "Nakko": {}
+      }
+    }
+  }
+}

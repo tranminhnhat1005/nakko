@@ -15,7 +15,6 @@ const ChatScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const insetTop = useSafeAreaInsets()['top'];
-    console.log('insetTop:::', insetTop);
     // insetTop = 47 is notch-iPhone, smaller than is home button-iPhone
     // spacings.half * 2 is the padding of InputBox
     const iosVerticalOffset = insetTop < 47 ? 65 : Math.ceil(insetTop) + spacings.half * 2;

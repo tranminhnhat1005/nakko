@@ -14,7 +14,7 @@ const ContactListItem = ({ user }) => {
                 <Text numberOfLines={1} style={styles.txtName}>
                     {user.name}
                 </Text>
-                <Text numberOfLines={1} style={styles.txtStatus}>
+                <Text numberOfLines={2} style={styles.txtStatus}>
                     {user.status}
                 </Text>
             </View>
@@ -36,7 +36,9 @@ const styles = StyleSheet.create({
         borderRadius: spacings.avatar / 2,
         marginRight: spacings.def,
     },
-    content: {},
+    content: {
+        flex: 1,
+    },
     txtName: {
         fontWeight: 'bold',
     },
