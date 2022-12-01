@@ -21,7 +21,6 @@ function App() {
             // query the database using Auth user id (sub)
             const userData = await API.graphql(graphqlOperation(getUser, { id: sub }));
 
-            console.log('userData:::', userData);
             if (userData.data.getUser) {
                 return console.log('User already exits in DB!');
             }

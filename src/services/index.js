@@ -1,0 +1,1 @@
+export { getCommonChatRoomWithAuthUser } from './chatRoomService';

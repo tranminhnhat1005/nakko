@@ -1,30 +1,42 @@
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { spacings } from '../../configs';
 
 const ChatListItem = ({ data }) => {
     const navigation = useNavigation();
+    const { users, id, LastMessage } = data;
+
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const fetchUser = async () => {
+            const {
+                attributes: { sub },
+            } = await Auth.currentAuthenticatedUser();
+            const userItem = users.items.find((userItem) => userItem?.user?.id !== sub);
+            setUser(userItem?.user);
+        };
+        fetchUser();
+    }, []);
 
     const onNavigate = () => {
-        const {
-            id,
-            user: { name },
-        } = data;
-        navigation.navigate('Chat', { id, name });
+        navigation.navigate('Chat', { id, name: user.name });
     };
     return (
         <Pressable onPress={onNavigate} style={styles.viewContainer}>
-            <Image source={{ uri: data.user.image }} style={styles.img} />
+            <Image source={{ uri: user?.image }} style={styles.img} />
             <View style={styles.viewContent}>
                 <View style={styles.viewInfo}>
                     <Text numberOfLines={1} style={styles.txtName}>
-                        {data.user.name}
+                        {user?.name}
                     </Text>
-                    <Text style={styles.txtTime}>{moment(data.lastMessage.createdAt).fromNow(true)}</Text>
+                    <Text style={styles.txtTime}>{moment(LastMessage?.createdAt).fromNow(true)}</Text>
                 </View>
                 <Text numberOfLines={2} style={styles.txtMessage}>
-                    {data.lastMessage.text}
+                    {LastMessage?.text}
                 </Text>
             </View>
         </Pressable>

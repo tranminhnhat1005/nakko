@@ -10,7 +10,6 @@ const ContactScreen = () => {
 
     useEffect(() => {
         API.graphql(graphqlOperation(listUsers)).then((response) => {
-            console.log('response:::', response);
             setUsers(response.data?.listUsers?.items);
         });
     }, []);
