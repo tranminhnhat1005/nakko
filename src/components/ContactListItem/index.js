@@ -1,49 +1,67 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { spacings } from '../../configs';
 import { createChatRoom, createUserChatRoom } from '../../graphql/mutations';
 import { getCommonChatRoomWithAuthUser } from '../../services';
-import { spacings } from '../../configs';
 
 const ContactListItem = ({ user }) => {
     const navigation = useNavigation();
+    const uri =
+        user.image && user.image.includes('http')
+            ? user.image
+            : 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg';
+
+    const onCheckExistChatRoom = async () => {
+        // check if already had a chat room with this user
+        return await getCommonChatRoomWithAuthUser(user.id);
+    };
+
+    const onCreateChatRoom = async () => {
+        // create a chat room
+        const { data } = await API.graphql(graphqlOperation(createChatRoom, { input: {} }));
+
+        if (!data.createChatRoom.id) {
+            console.log('Error when creating the chat');
+            return null;
+        }
+        return data.createChatRoom.id;
+    };
+
+    const onAddTargetUser = async (chatRoomId) => {
+        // add target user to the chat room
+        const input = { chatRoomId, userId: user.id };
+        await API.graphql(graphqlOperation(createUserChatRoom, { input }));
+    };
+
+    const onAddAuthUser = async (chatRoomId) => {
+        // add auth user to the chat room
+        const userId = await AsyncStorage.getItem('AUTH_USER_ID');
+        const input = { chatRoomId, userId };
+        await API.graphql(graphqlOperation(createUserChatRoom, { input }));
+    };
 
     const onNavigate = async () => {
-        // check if already had a chat room with this user
-        const existingChatRoom = await getCommonChatRoomWithAuthUser(user.id);
-        if (existingChatRoom) {
-            return navigation.navigate('Chat', { id: existingChatRoom.id });
+        const existed = await onCheckExistChatRoom();
+        if (existed && existed.chatRoom) {
+            return navigation.navigate('Chat', { id: existed.chatRoom.id, name: user.name });
         }
-        // create a chat room
-        const {
-            data: {
-                createChatRoom: { id },
-            },
-        } = await API.graphql(graphqlOperation(createChatRoom, { input: {} }));
-
+        const id = await onCreateChatRoom();
         if (!id) {
-            console.log('Error when creating the chat');
+            return;
         }
-
-        // add this user to the chat room
-        await API.graphql(graphqlOperation(createUserChatRoom, { input: { chatRoomId: id, userId: user.id } }));
-
-        // add auth user to the chat room
-        const {
-            attributes: { sub },
-        } = await Auth.currentAuthenticatedUser();
-        await API.graphql(graphqlOperation(createUserChatRoom, { input: { chatRoomId: id, userId: sub } }));
+        await onAddTargetUser(id);
+        await onAddAuthUser(id);
 
         // navigate to the chat room
-        navigation.navigate('Chat', { id });
+        navigation.navigate('Chat', { id, name: user.name });
     };
+
     return (
         <Pressable onPress={onNavigate} style={styles.viewContainer}>
-            <Image
-                source={{ uri: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg' }}
-                style={styles.img}
-            />
+            <Image source={{ uri }} style={styles.img} />
             <View style={styles.content}>
                 <Text numberOfLines={1} style={styles.txtName}>
                     {user.name}

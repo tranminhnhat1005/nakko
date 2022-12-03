@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Amplify, API, Auth, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +18,12 @@ function App() {
             const {
                 attributes: { sub, phone_number },
             } = await Auth.currentAuthenticatedUser({ bypassCache: true });
+            if (sub) {
+                await AsyncStorage.setItem('AUTH_USER_ID', sub);
+            }
+            if (phone_number) {
+                await AsyncStorage.setItem('AUTH_USER_PHONE_NUMBER', phone_number);
+            }
 
             // query the database using Auth user id (sub)
             const userData = await API.graphql(graphqlOperation(getUser, { id: sub }));
@@ -29,7 +36,7 @@ function App() {
             const input = {
                 id: sub,
                 name: phone_number,
-                status: 'Hey, I am using Nakko!',
+                status: `Hey, I am using Nakko with the nickname is ${phone_number}!`,
             };
             await API.graphql(graphqlOperation(createUser, { input }));
         };

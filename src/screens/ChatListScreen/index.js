@@ -1,4 +1,5 @@
-import { API, Auth, graphqlOperation } from 'aws-amplify';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API, graphqlOperation } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
@@ -10,16 +11,15 @@ const ChatListScreen = () => {
 
     useEffect(() => {
         const fetchChatsRoom = async () => {
-            const {
-                attributes: { sub },
-            } = await Auth.currentAuthenticatedUser();
-            const response = await API.graphql(graphqlOperation(listChatRooms, { id: sub }));
+            const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
+            const response = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
 
             setChatRooms(response.data.getUser.ChatRooms.items);
         };
 
         fetchChatsRoom();
     }, []);
+
     const renderItem = ({ item }) => {
         const {
             chatRoom: { LastMessage, users, id },

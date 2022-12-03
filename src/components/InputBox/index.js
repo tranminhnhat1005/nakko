@@ -2,15 +2,36 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { API, graphqlOperation, Auth } from 'aws-amplify';
 
+import { createMessage, updateChatRoom } from '../../graphql/mutations';
 import { colors, spacings } from '../../configs';
 
-const InputBox = () => {
-    const [newMessage, setNewMessage] = useState('');
-    const onSend = () => {
-        console.warn('Sending a new message: ', newMessage);
+const InputBox = ({ chatRoom }) => {
+    const [text, setText] = useState('');
+    const onSend = async () => {
+        const {
+            attributes: { sub: userID },
+        } = await Auth.currentAuthenticatedUser();
+        const input = {
+            chatroomID: chatRoom.id,
+            text,
+            userID,
+        };
 
-        setNewMessage('');
+        const newMessageData = await API.graphql(graphqlOperation(createMessage, { input }));
+
+        setText('');
+
+        await API.graphql(
+            graphqlOperation(updateChatRoom, {
+                input: {
+                    _version: chatRoom._version,
+                    chatRoomLastMessageId: newMessageData.data.createMessage.id,
+                    id: chatRoom.id,
+                },
+            })
+        );
     };
 
     return (
@@ -19,8 +40,8 @@ const InputBox = () => {
             <TextInput
                 style={styles.txtInput}
                 placeholder={'type your message here...'}
-                value={newMessage}
-                onChangeText={setNewMessage}
+                value={text}
+                onChangeText={setText}
                 // multiline
             />
             <MaterialIcons

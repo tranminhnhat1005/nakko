@@ -1,22 +1,24 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { spacings } from '../../configs';
 
 const ChatListItem = ({ data }) => {
+    const [user, setUser] = useState(null);
     const navigation = useNavigation();
     const { users, id, LastMessage } = data;
 
-    const [user, setUser] = useState(null);
+    const uri = user?.image?.includes('http')
+        ? user.image
+        : 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg';
+
     useEffect(() => {
         const fetchUser = async () => {
-            const {
-                attributes: { sub },
-            } = await Auth.currentAuthenticatedUser();
-            const userItem = users.items.find((userItem) => userItem?.user?.id !== sub);
+            const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
+            const userItem = users.items.find((userItem) => userItem?.user?.id !== authUserId);
             setUser(userItem?.user);
         };
         fetchUser();
@@ -27,7 +29,7 @@ const ChatListItem = ({ data }) => {
     };
     return (
         <Pressable onPress={onNavigate} style={styles.viewContainer}>
-            <Image source={{ uri: user?.image }} style={styles.img} />
+            <Image source={{ uri }} style={styles.img} />
             <View style={styles.viewContent}>
                 <View style={styles.viewInfo}>
                     <Text numberOfLines={1} style={styles.txtName}>
