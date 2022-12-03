@@ -12,9 +12,13 @@ const ChatListScreen = () => {
     useEffect(() => {
         const fetchChatsRoom = async () => {
             const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
-            const response = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
+            const { data } = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
 
-            setChatRooms(response.data.getUser.ChatRooms.items);
+            const rooms = data?.getUser?.ChatRooms?.items || [];
+            const sortedRooms = rooms.sort(
+                (roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt)
+            );
+            setChatRooms(sortedRooms);
         };
 
         fetchChatsRoom();
