@@ -4,33 +4,44 @@ import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import ChatListItem from '../../components/ChatListItem';
+import { spacings } from '../../configs';
 import { listChatRooms } from './queries';
 
 const ChatListScreen = () => {
     const [chatRooms, setChatRooms] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchChatsRoom = async () => {
+        setLoading(true);
+        const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
+        const { data } = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
+
+        const rooms = data?.getUser?.ChatRooms?.items || [];
+        const sortedRooms = rooms.sort(
+            (roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt)
+        );
+        setChatRooms(sortedRooms);
+        setLoading(false);
+    };
 
     useEffect(() => {
-        const fetchChatsRoom = async () => {
-            const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
-            const { data } = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
-
-            const rooms = data?.getUser?.ChatRooms?.items || [];
-            const sortedRooms = rooms.sort(
-                (roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt)
-            );
-            setChatRooms(sortedRooms);
-        };
-
         fetchChatsRoom();
     }, []);
 
     const renderItem = ({ item }) => {
-        const {
-            chatRoom: { LastMessage, users, id },
-        } = item;
-        return <ChatListItem data={{ users, id, LastMessage }} />;
+        const { chatRoom } = item;
+        return <ChatListItem chat={chatRoom} />;
     };
-    return <FlatList style={styles.flatList} data={chatRooms} renderItem={renderItem} />;
+    return (
+        <FlatList
+            style={styles.flatList}
+            contentContainerStyle={{ paddingVertical: spacings.half }}
+            data={chatRooms}
+            renderItem={renderItem}
+            refreshing={loading}
+            onRefresh={fetchChatsRoom}
+        />
+    );
 };
 
 const styles = StyleSheet.create({

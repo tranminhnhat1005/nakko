@@ -1,15 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { API, graphqlOperation } from 'aws-amplify';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { spacings } from '../../configs';
+import { onUpdateChatRoom } from '../../graphql/subscriptions';
 
-const ChatListItem = ({ data }) => {
-    const [user, setUser] = useState(null);
+const ChatListItem = ({ chat }) => {
     const navigation = useNavigation();
-    const { users, id, LastMessage } = data;
+    const [user, setUser] = useState(null);
+    const [chatRoom, setChatRoom] = useState(chat);
 
     const uri = user?.image?.includes('http')
         ? user.image
@@ -18,14 +20,28 @@ const ChatListItem = ({ data }) => {
     useEffect(() => {
         const fetchUser = async () => {
             const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
-            const userItem = users.items.find((userItem) => userItem?.user?.id !== authUserId);
+            const userItem = chatRoom?.users?.items.find((userItem) => userItem?.user?.id !== authUserId);
             setUser(userItem?.user);
         };
         fetchUser();
     }, []);
 
+    useEffect(() => {
+        // subscribe to the update of chat room
+        const subscription = API.graphql(
+            graphqlOperation(onUpdateChatRoom, { filter: { chatroomID: { eq: chat.id } } })
+        ).subscribe({
+            next: ({ value }) => {
+                setChatRoom((prevState) => ({ ...(prevState || {}), ...value.data.onUpdateChatRoom }));
+            },
+            error: (err) => console.warn(err),
+        });
+
+        return () => subscription.unsubscribe();
+    }, [chat.id]);
+
     const onNavigate = () => {
-        navigation.navigate('Chat', { id, name: user.name });
+        navigation.navigate('Chat', { id: chatRoom.id, name: user.name });
     };
     return (
         <Pressable onPress={onNavigate} style={styles.viewContainer}>
@@ -35,12 +51,12 @@ const ChatListItem = ({ data }) => {
                     <Text numberOfLines={1} style={styles.txtName}>
                         {user?.name}
                     </Text>
-                    {!!LastMessage && (
-                        <Text style={styles.txtTime}>{moment(LastMessage?.createdAt).fromNow(true)}</Text>
+                    {!!chatRoom?.LastMessage && (
+                        <Text style={styles.txtTime}>{moment(chatRoom?.LastMessage?.createdAt).fromNow(true)}</Text>
                     )}
                 </View>
                 <Text numberOfLines={2} style={styles.txtMessage}>
-                    {LastMessage?.text}
+                    {chatRoom?.LastMessage?.text}
                 </Text>
             </View>
         </Pressable>

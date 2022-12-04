@@ -1,15 +1,14 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { API, graphqlOperation } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { API, graphqlOperation, Auth } from 'aws-amplify';
 
-import { getChatRoom, listMessagesByChatRoom } from '../../graphql/queries';
 import bg from '../../../assets/images/BG.png';
 import InputBox from '../../components/InputBox';
 import Message from '../../components/Message';
 import { settings, spacings } from '../../configs';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getChatRoom, listMessagesByChatRoom } from '../../graphql/queries';
+import { onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions';
 
 const IS_IOS = Platform.OS === 'ios';
 
@@ -28,6 +27,18 @@ const ChatScreen = () => {
         };
 
         fetchChatRoom();
+
+        // subscribe to the update of chat room
+        const subscription = API.graphql(
+            graphqlOperation(onUpdateChatRoom, { filter: { chatroomID: { eq: chatroomID } } })
+        ).subscribe({
+            next: ({ value }) => {
+                setChatRoom((prevState) => ({ ...(prevState || {}), ...value.data.onUpdateChatRoom }));
+            },
+            error: (err) => console.warn(err),
+        });
+
+        return () => subscription.unsubscribe();
     }, [chatroomID]);
 
     useEffect(() => {
@@ -40,6 +51,18 @@ const ChatScreen = () => {
         };
 
         fetchMessages();
+
+        // subscribe to new messages
+        const subscription = API.graphql(
+            graphqlOperation(onCreateMessage, { filter: { chatroomID: { eq: chatroomID } } })
+        ).subscribe({
+            next: ({ value }) => {
+                setMessages((prevState) => [value.data.onCreateMessage, ...prevState]);
+            },
+            error: (err) => console.warn(err),
+        });
+
+        return () => subscription.unsubscribe();
     }, [chatroomID]);
 
     useEffect(() => {
