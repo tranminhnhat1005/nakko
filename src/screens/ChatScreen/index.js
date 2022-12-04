@@ -30,7 +30,7 @@ const ChatScreen = () => {
 
         // subscribe to the update of chat room
         const subscription = API.graphql(
-            graphqlOperation(onUpdateChatRoom, { filter: { chatroomID: { eq: chatroomID } } })
+            graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: chatroomID } } })
         ).subscribe({
             next: ({ value }) => {
                 setChatRoom((prevState) => ({ ...(prevState || {}), ...value.data.onUpdateChatRoom }));

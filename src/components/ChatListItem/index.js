@@ -29,7 +29,7 @@ const ChatListItem = ({ chat }) => {
     useEffect(() => {
         // subscribe to the update of chat room
         const subscription = API.graphql(
-            graphqlOperation(onUpdateChatRoom, { filter: { chatroomID: { eq: chat.id } } })
+            graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: chat.id } } })
         ).subscribe({
             next: ({ value }) => {
                 setChatRoom((prevState) => ({ ...(prevState || {}), ...value.data.onUpdateChatRoom }));
@@ -49,7 +49,7 @@ const ChatListItem = ({ chat }) => {
             <View style={styles.viewContent}>
                 <View style={styles.viewInfo}>
                     <Text numberOfLines={1} style={styles.txtName}>
-                        {user?.name}
+                        {chatRoom.name || user?.name}
                     </Text>
                     {!!chatRoom?.LastMessage && (
                         <Text style={styles.txtTime}>{moment(chatRoom?.LastMessage?.createdAt).fromNow(true)}</Text>
