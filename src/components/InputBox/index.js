@@ -35,7 +35,7 @@ const InputBox = ({ chatRoom }) => {
     };
 
     return (
-        <SafeAreaView edges={['bottom']} style={styles.viewContainer}>
+        <SafeAreaView edges={['bottom']} mode={'margin'} style={styles.viewContainer}>
             <AntDesign name={'plus'} size={spacings.icon} color={colors.blueIcon} style={styles.icon} />
             <TextInput
                 style={styles.txtInput}
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     viewContainer: {
         flexDirection: 'row',
         backgroundColor: 'whitesmoke',
-        padding: spacings.half,
+        paddingVertical: spacings.half,
         paddingHorizontal: spacings.def,
     },
     txtInput: {

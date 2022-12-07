@@ -23,7 +23,7 @@ const ChatScreen = () => {
     useEffect(() => {
         const fetchChatRoom = async () => {
             const { data } = await API.graphql(graphqlOperation(getChatRoom, { id: chatroomID }));
-            setChatRoom(data?.getChatRoom);
+            setChatRoom(data.getChatRoom);
         };
 
         fetchChatRoom();
@@ -76,17 +76,13 @@ const ChatScreen = () => {
     return (
         <KeyboardAvoidingView
             behavior={IS_IOS ? 'padding' : 'height'}
-            keyboardVerticalOffset={settings.getInputBoxInsetTop()[+IS_IOS]}
+            keyboardVerticalOffset={chatRoom ? settings.getInputBoxInsetTop()[+IS_IOS] : 0}
             style={styles.container}
         >
-            {!chatRoom ? (
-                <ActivityIndicator size={'large'} />
-            ) : (
-                <ImageBackground source={bg} style={styles.bg}>
-                    <FlatList inverted style={styles.flatList} data={messages} renderItem={renderItem} />
-                    <InputBox chatRoom={chatRoom} />
-                </ImageBackground>
-            )}
+            <ImageBackground source={bg} style={styles.bg}>
+                <FlatList inverted style={styles.flatList} data={messages} renderItem={renderItem} />
+            </ImageBackground>
+            <InputBox chatRoom={chatRoom} />
         </KeyboardAvoidingView>
     );
 };
