@@ -1,12 +1,13 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, TextInput, Platform, View, SafeAreaView } from 'react-native';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 import { API, graphqlOperation, Auth } from 'aws-amplify';
 
 import { createMessage, updateChatRoom } from '../../graphql/mutations';
 import { colors, spacings } from '../../configs';
 
+const IS_IOS = Platform.OS === 'ios';
 const InputBox = ({ chatRoom }) => {
     const [text, setText] = useState('');
     const onSend = async () => {
@@ -35,7 +36,7 @@ const InputBox = ({ chatRoom }) => {
     };
 
     return (
-        <SafeAreaView edges={['bottom']} mode={'margin'} style={styles.viewContainer}>
+        <View style={styles.viewContainer}>
             <AntDesign name={'plus'} size={spacings.icon} color={colors.blueIcon} style={styles.icon} />
             <TextInput
                 style={styles.txtInput}
@@ -51,7 +52,7 @@ const InputBox = ({ chatRoom }) => {
                 color={'white'}
                 style={styles.iconSend}
             />
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -61,11 +62,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'whitesmoke',
         paddingVertical: spacings.half,
         paddingHorizontal: spacings.def,
+        alignItems: 'flex-end',
     },
     txtInput: {
         flex: 1,
+        minHeight: 40,
         backgroundColor: 'white',
-        padding: spacings.half,
+        paddingVertical: spacings.half,
         paddingHorizontal: spacings.def,
         marginHorizontal: spacings.def,
 
@@ -76,14 +79,14 @@ const styles = StyleSheet.create({
     icon: {
         width: spacings.icon,
         height: spacings.icon,
-        alignSelf: 'center',
+        marginBottom: 8,
     },
     iconSend: {
         backgroundColor: colors.blueIcon,
-        padding: 6,
-        borderRadius: 14,
+        padding: spacings.half,
+        borderRadius: 12,
         overflow: 'hidden',
-        alignSelf: 'center',
+        marginBottom: 8,
     },
 });
 

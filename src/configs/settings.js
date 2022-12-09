@@ -7,9 +7,7 @@ const getInset = (edge = 'all') => {
     }
     return useSafeAreaInsets()[edge];
 };
-const getInputBoxInsetTop = () => {
-    const top = getInset('top');
-
+const getInputBoxInsetTop = (top) => {
     const android = Math.ceil(top) + spacings.half * 2 + 130;
     const ios = top < 47 ? 65 : Math.ceil(top) + spacings.half * 2;
 

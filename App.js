@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Amplify, API, Auth, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react-native';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 import awsConfig from './src/aws-exports';
+import AppContainerView from './src/components/AppContainerView';
 import { createUser } from './src/graphql/mutations';
 import { getUser } from './src/graphql/queries';
 import Navigator from './src/navigation';
@@ -17,7 +17,7 @@ function App() {
             // get Auth user
             const {
                 attributes: { sub, phone_number },
-            } = await Auth.currentAuthenticatedUser({ bypassCache: true });
+            } = await Auth.currentAuthenticatedUser();
             if (sub) {
                 await AsyncStorage.setItem('AUTH_USER_ID', sub);
             }
@@ -45,20 +45,11 @@ function App() {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <AppContainerView>
             <Navigator />
-            <StatusBar style={'auto'} />
-        </View>
+        </AppContainerView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        height: '100%',
-        backgroundColor: 'whitesmoke',
-    },
-});
 
 // export default App;
 export default withAuthenticator(App);

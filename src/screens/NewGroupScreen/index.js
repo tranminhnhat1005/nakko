@@ -34,7 +34,7 @@ const NewGroupScreen = () => {
 
     const onCreateChatRoom = async () => {
         // create a chat room
-        const { data } = await API.graphql(graphqlOperation(createChatRoom, { input: {} }));
+        const { data } = await API.graphql(graphqlOperation(createChatRoom, { input: { name } }));
 
         if (!data.createChatRoom.id) {
             console.log('Error when creating the chat');

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
@@ -13,7 +13,10 @@ const ChatListScreen = () => {
 
     const fetchChatsRoom = async () => {
         setLoading(true);
-        const authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
+        let authUserId = await AsyncStorage.getItem('AUTH_USER_ID');
+        if (!authUserId) {
+            authUserId = await Auth.currentAuthenticatedUser();
+        }
         const { data } = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
 
         const rooms = data?.getUser?.ChatRooms?.items || [];

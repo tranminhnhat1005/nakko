@@ -51,9 +51,9 @@ const ChatListItem = ({ chat }) => {
                     <Text numberOfLines={1} style={styles.txtName}>
                         {chatRoom.name || user?.name}
                     </Text>
-                    {!!chatRoom?.LastMessage && (
+                    {!!chatRoom?.LastMessage ? (
                         <Text style={styles.txtTime}>{moment(chatRoom?.LastMessage?.createdAt).fromNow(true)}</Text>
-                    )}
+                    ) : null}
                 </View>
                 <Text numberOfLines={2} style={styles.txtMessage}>
                     {chatRoom?.LastMessage?.text}
