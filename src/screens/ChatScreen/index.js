@@ -88,6 +88,7 @@ const ChatScreen = () => {
             headerRight: () => (
                 <Feather
                     onPress={() => navigation.navigate('Group Info', { id: chatRoomId })}
+                    hitSlop={styles.hitSlopBtnMore}
                     name={'more-vertical'}
                     size={24}
                     color={'gray'}
@@ -128,6 +129,12 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    hitSlopBtnMore: {
+        top: 10,
+        right: 10,
+        bottom: 10,
+        left: 10,
     },
     bg: {
         flex: 1,

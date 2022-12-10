@@ -38,7 +38,7 @@ const ContactScreen = () => {
         const { data } = await API.graphql(graphqlOperation(createChatRoom, { input: {} }));
 
         if (!data.createChatRoom.id) {
-            console.log('Error when creating the chat');
+            console.warn('Error when creating the chat');
             return null;
         }
         return data.createChatRoom.id;

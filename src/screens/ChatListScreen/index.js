@@ -20,9 +20,9 @@ const ChatListScreen = () => {
         const { data } = await API.graphql(graphqlOperation(listChatRooms, { id: authUserId }));
 
         const rooms = data?.getUser?.ChatRooms?.items || [];
-        const sortedRooms = rooms.sort(
-            (roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt)
-        );
+        const sortedRooms = rooms
+            .filter((room) => !room._deleted)
+            .sort((roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt));
         setChatRooms(sortedRooms);
         setLoading(false);
     };
@@ -35,10 +35,11 @@ const ChatListScreen = () => {
         const { chatRoom } = item;
         return <ChatListItem chat={chatRoom} />;
     };
+
     return (
         <FlatList
             style={styles.flatList}
-            contentContainerStyle={{ paddingVertical: spacings.half }}
+            contentContainerStyle={styles.flatListContent}
             data={chatRooms}
             renderItem={renderItem}
             refreshing={loading}
@@ -50,6 +51,9 @@ const ChatListScreen = () => {
 const styles = StyleSheet.create({
     flatList: {
         backgroundColor: 'white',
+    },
+    flatListContent: {
+        paddingVertical: spacings.half,
     },
 });
 

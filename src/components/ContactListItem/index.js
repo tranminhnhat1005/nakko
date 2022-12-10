@@ -4,14 +4,12 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, spacings } from '../../configs';
 
 const ContactListItem = ({ user, onPress = () => {}, selectable = false, isSelected = false }) => {
-    const uri =
-        user.image && user.image.includes('http')
-            ? user.image
-            : 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg';
+    const source =
+        user.image && user.image.includes('http') ? { uri: user.image } : require('../../../assets/images/person.png');
 
     return (
         <Pressable onPress={onPress} style={styles.viewContainer}>
-            <Image source={{ uri }} style={styles.img} />
+            <Image source={source} style={styles.img} />
             <View style={styles.content}>
                 <Text numberOfLines={1} style={styles.txtName}>
                     {user.name}
