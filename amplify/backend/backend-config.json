@@ -47,5 +47,12 @@
         }
       }
     }
+  },
+  "storage": {
+    "s3nakkostoragea9066172": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
   }
 }

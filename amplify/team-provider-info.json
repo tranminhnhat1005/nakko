@@ -17,6 +17,13 @@
       },
       "api": {
         "Nakko": {}
+      },
+      "storage": {
+        "nakko6b04f027": {
+          "bucketName": "nakko-storage-9d1eb09f82232-staging",
+          "region": "ap-southeast-1"
+        },
+        "s3nakkostoragea9066172": {}
       }
     }
   }

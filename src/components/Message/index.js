@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { S3Image } from 'aws-amplify-react-native';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -27,6 +28,7 @@ const Message = ({ message }) => {
                 },
             ]}
         >
+            {message.images?.length ? <S3Image imgKey={message.images[0]} style={styles.s3Image} /> : null}
             <Text style={styles.txtMessage}>{message.text}</Text>
             <Text style={styles.txtTime}>{moment(message.createdAt).fromNow(true)}</Text>
         </View>
@@ -54,6 +56,14 @@ const styles = StyleSheet.create({
     txtTime: {
         color: 'grey',
         alignSelf: 'flex-end',
+    },
+    s3Image: {
+        width: 200,
+        height: 200,
+        // borderColor: 'white',
+        // borderWidth: 2,
+        borderRadius: spacings.half,
+        marginBottom: spacings.half,
     },
 });
 

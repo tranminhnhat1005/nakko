@@ -1,0 +1,12 @@
+{
+  "resourceName": "s3nakkostoragea9066172",
+  "bucketName": "nakko-storage-a9066172",
+  "policyUUID": "ec33eea4",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}

@@ -21,8 +21,12 @@ const ChatListScreen = () => {
 
         const rooms = data?.getUser?.ChatRooms?.items || [];
         const sortedRooms = rooms
-            .filter((room) => !room._deleted)
-            .sort((roomA, roomB) => new Date(roomB.chatRoom.updatedAt) - new Date(roomA.chatRoom.updatedAt));
+            .filter((room) => room.chatRoom.LastMessage && !room._deleted)
+            .sort((roomA, roomB) => {
+                const dateB = new Date(roomB.chatRoom.updatedAt);
+                const dateA = new Date(roomA.chatRoom.updatedAt);
+                return dateB - dateA;
+            });
         setChatRooms(sortedRooms);
         setLoading(false);
     };
