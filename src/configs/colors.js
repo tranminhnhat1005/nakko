@@ -1,4 +1,4 @@
 export const colors = {
-    greenMsg: '#DCF8C5',
+    greenMsg: 'rgb(219, 241, 255)',
     blueIcon: '#4169e1',
 };

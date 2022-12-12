@@ -50,7 +50,7 @@ const ChatListItem = ({ chat }) => {
             <View style={styles.viewContent}>
                 <View style={styles.viewInfo}>
                     <Text numberOfLines={1} style={styles.txtName}>
-                        {chatRoom.name || user?.name}
+                        {chatRoom.name || user?.name || 'Anonymous'}
                     </Text>
                     {!!chatRoom?.LastMessage ? (
                         <Text style={styles.txtTime}>{moment(chatRoom?.LastMessage?.createdAt).fromNow(true)}</Text>

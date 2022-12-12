@@ -1,13 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Storage } from 'aws-amplify';
 import { S3Image } from 'aws-amplify-react-native';
+import ImageView from 'react-native-image-viewing';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacings } from '../../configs';
 
 const Message = ({ message }) => {
     const [isMe, setIsMe] = useState(false);
+    const [imageSources, setImageSources] = useState([]);
+    const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
     useEffect(() => {
         const isMyMessage = async () => {
@@ -18,6 +22,16 @@ const Message = ({ message }) => {
         isMyMessage();
     }, []);
 
+    useEffect(() => {
+        const downloadImage = async () => {
+            if (message.images?.length) {
+                const uri = await Storage.get(message.images[0]);
+                setImageSources([{ uri }]);
+            }
+        };
+
+        downloadImage();
+    }, [message.images]);
     return (
         <View
             style={[
@@ -28,7 +42,21 @@ const Message = ({ message }) => {
                 },
             ]}
         >
-            {message.images?.length ? <S3Image imgKey={message.images[0]} style={styles.s3Image} /> : null}
+            {message.images?.length ? (
+                <>
+                    <Pressable onPress={() => setImageViewerVisible(true)}>
+                        <Image source={imageSources[0]} style={styles.s3Image} />
+                    </Pressable>
+                    <ImageView
+                        animationType={'slide'}
+                        swipeToCloseEnabled={true}
+                        images={imageSources}
+                        imageIndex={0}
+                        visible={imageViewerVisible}
+                        onRequestClose={() => setImageViewerVisible(false)}
+                    />
+                </>
+            ) : null}
             <Text style={styles.txtMessage}>{message.text}</Text>
             <Text style={styles.txtTime}>{moment(message.createdAt).fromNow(true)}</Text>
         </View>
