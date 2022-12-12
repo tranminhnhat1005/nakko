@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Storage } from 'aws-amplify';
-import { S3Image } from 'aws-amplify-react-native';
-import ImageView from 'react-native-image-viewing';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import ImageView from 'react-native-image-viewing';
 
 import { colors, spacings } from '../../configs';
 
@@ -12,6 +11,8 @@ const Message = ({ message }) => {
     const [isMe, setIsMe] = useState(false);
     const [imageSources, setImageSources] = useState([]);
     const [imageViewerVisible, setImageViewerVisible] = useState(false);
+    const { width } = useWindowDimensions();
+    const imagesContainerWidth = Math.floor(width * 0.8 - 30);
 
     useEffect(() => {
         const isMyMessage = async () => {
@@ -25,13 +26,14 @@ const Message = ({ message }) => {
     useEffect(() => {
         const downloadImage = async () => {
             if (message.images?.length) {
-                const uri = await Storage.get(message.images[0]);
-                setImageSources([{ uri }]);
+                const uris = await Promise.all(message.images.map(Storage.get));
+                setImageSources(uris.map((uri) => ({ uri })));
             }
         };
 
         downloadImage();
     }, [message.images]);
+
     return (
         <View
             style={[
@@ -42,11 +44,16 @@ const Message = ({ message }) => {
                 },
             ]}
         >
-            {message.images?.length ? (
-                <>
-                    <Pressable onPress={() => setImageViewerVisible(true)}>
-                        <Image source={imageSources[0]} style={styles.s3Image} />
-                    </Pressable>
+            {imageSources.length ? (
+                <View style={[{ width: imagesContainerWidth }, styles.images]}>
+                    {imageSources.map((imageSource) => (
+                        <Pressable
+                            style={[styles.imageContainer, imageSources.length === 1 && { flex: 1 }]}
+                            onPress={() => setImageViewerVisible(true)}
+                        >
+                            <Image source={imageSource} style={styles.image} />
+                        </Pressable>
+                    ))}
                     <ImageView
                         animationType={'slide'}
                         swipeToCloseEnabled={true}
@@ -55,7 +62,7 @@ const Message = ({ message }) => {
                         visible={imageViewerVisible}
                         onRequestClose={() => setImageViewerVisible(false)}
                     />
-                </>
+                </View>
             ) : null}
             <Text style={styles.txtMessage}>{message.text}</Text>
             <Text style={styles.txtTime}>{moment(message.createdAt).fromNow(true)}</Text>
@@ -85,13 +92,18 @@ const styles = StyleSheet.create({
         color: 'grey',
         alignSelf: 'flex-end',
     },
-    s3Image: {
-        width: 200,
-        height: 200,
-        // borderColor: 'white',
-        // borderWidth: 2,
+    images: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    imageContainer: {
+        width: '49%',
+        padding: 3,
+        aspectRatio: 1,
+    },
+    image: {
+        flex: 1,
         borderRadius: spacings.half,
-        marginBottom: spacings.half,
     },
 });
 

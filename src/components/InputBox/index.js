@@ -2,7 +2,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { API, Auth, graphqlOperation, Storage } from 'aws-amplify';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { Image, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Image, Platform, StyleSheet, TextInput, View } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuid } from 'uuid';
 
@@ -12,7 +12,7 @@ import { createMessage, updateChatRoom } from '../../graphql/mutations';
 const IS_IOS = Platform.OS === 'ios';
 const InputBox = ({ chatRoom }) => {
     const [text, setText] = useState('');
-    const [image, setImage] = useState(null);
+    const [images, setImages] = useState([]);
 
     const uploadFile = async (fileUri) => {
         try {
@@ -33,15 +33,16 @@ const InputBox = ({ chatRoom }) => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1,
+            allowsMultipleSelection: true,
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0]);
+            setImages(result.assets);
         }
     };
 
-    const onRemoveImage = () => {
-        setImage(null);
+    const onRemoveImage = (item) => {
+        setImages((prevState) => prevState.filter((img) => img.assetId !== item.assetId));
     };
 
     const onSend = async () => {
@@ -54,10 +55,9 @@ const InputBox = ({ chatRoom }) => {
             userID,
         };
 
-        if (image) {
-            const key = await uploadFile(image.uri);
-            input.images = [key];
-            setImage(null);
+        if (images.length) {
+            input.images = await Promise.all(images.map((image) => uploadFile(image.uri)));
+            setImages([]);
         }
 
         const newMessageData = await API.graphql(graphqlOperation(createMessage, { input }));
@@ -75,18 +75,26 @@ const InputBox = ({ chatRoom }) => {
         );
     };
 
+    const renderImage = ({ item }) => {
+        return (
+            <>
+                <Image source={{ uri: item.uri }} style={styles.selectedImage} resizeMode={'contain'} />
+                <MaterialIcons
+                    name={'highlight-remove'}
+                    size={spacings.icon}
+                    onPress={() => onRemoveImage(item)}
+                    color={'red'}
+                    style={styles.removeSelectedImage}
+                />
+            </>
+        );
+    };
+
     return (
         <>
-            {image ? (
+            {images.length ? (
                 <View style={styles.attachmentController}>
-                    <Image source={{ uri: image.uri }} style={styles.selectedImage} resizeMode={'contain'} />
-                    <MaterialIcons
-                        name={'highlight-remove'}
-                        size={spacings.icon}
-                        onPress={onRemoveImage}
-                        color={'red'}
-                        style={styles.removeSelectedImage}
-                    />
+                    <FlatList horizontal data={images} renderItem={renderImage} />
                 </View>
             ) : null}
             <View style={styles.viewContainer}>
@@ -153,8 +161,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'whitesmoke',
     },
     selectedImage: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 100,
         marginTop: spacings.half,
     },
     removeSelectedImage: {
@@ -162,7 +170,7 @@ const styles = StyleSheet.create({
         right: spacings.def,
         top: spacings.def,
         borderRadius: spacings.def,
-        backgroundColor: 'transparent',
+        backgroundColor: 'whitesmoke',
         overflow: 'hidden',
     },
 });
