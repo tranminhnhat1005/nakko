@@ -10,6 +10,7 @@ import { colors, spacings } from '../../configs';
 const Message = ({ message }) => {
     const [isMe, setIsMe] = useState(false);
     const [imageSources, setImageSources] = useState([]);
+    const [downloadedAttachments, setDownloadedAttachments] = useState([]);
     const [imageViewerVisible, setImageViewerVisible] = useState(false);
     const { width } = useWindowDimensions();
     const imagesContainerWidth = Math.floor(width * 0.8 - 30);
@@ -24,15 +25,19 @@ const Message = ({ message }) => {
     }, []);
 
     useEffect(() => {
-        const downloadImage = async () => {
-            if (message.images?.length) {
-                const uris = await Promise.all(message.images.map(Storage.get));
-                setImageSources(uris.map((uri) => ({ uri })));
+        const downloadAttachment = async () => {
+            if (message.Attachments?.items?.length) {
+                const downloadAttachments = await Promise.all(
+                    message.Attachments.items.map((attachment) =>
+                        Storage.get(attachment.storageKey).then((uri) => ({ ...attachment, uri }))
+                    )
+                );
+                setDownloadedAttachments(downloadAttachments);
             }
         };
 
-        downloadImage();
-    }, [message.images]);
+        downloadAttachment();
+    }, [message.Attachments.items]);
 
     return (
         <View
@@ -44,20 +49,21 @@ const Message = ({ message }) => {
                 },
             ]}
         >
-            {imageSources.length ? (
+            {downloadedAttachments.length ? (
                 <View style={[{ width: imagesContainerWidth }, styles.images]}>
-                    {imageSources.map((imageSource) => (
+                    {downloadedAttachments.map((downloadAttachment, idx) => (
                         <Pressable
+                            key={idx}
                             style={[styles.imageContainer, imageSources.length === 1 && { flex: 1 }]}
                             onPress={() => setImageViewerVisible(true)}
                         >
-                            <Image source={imageSource} style={styles.image} />
+                            <Image source={{ uri: downloadAttachment.uri }} style={styles.image} />
                         </Pressable>
                     ))}
                     <ImageView
                         animationType={'slide'}
                         swipeToCloseEnabled={true}
-                        images={imageSources}
+                        images={downloadedAttachments.map(({ uri }) => ({ uri }))}
                         imageIndex={0}
                         visible={imageViewerVisible}
                         onRequestClose={() => setImageViewerVisible(false)}

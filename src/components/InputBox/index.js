@@ -7,12 +7,12 @@ import 'react-native-get-random-values';
 import { v4 as uuid } from 'uuid';
 
 import { colors, spacings } from '../../configs';
-import { createMessage, updateChatRoom } from '../../graphql/mutations';
+import { createAttachment, createMessage, updateChatRoom } from '../../graphql/mutations';
 
 const IS_IOS = Platform.OS === 'ios';
 const InputBox = ({ chatRoom }) => {
     const [text, setText] = useState('');
-    const [images, setImages] = useState([]);
+    const [files, setFiles] = useState([]);
 
     const uploadFile = async (fileUri) => {
         try {
@@ -37,12 +37,26 @@ const InputBox = ({ chatRoom }) => {
         });
 
         if (!result.canceled) {
-            setImages(result.assets);
+            setFiles(result.assets);
         }
     };
 
-    const onRemoveImage = (item) => {
-        setImages((prevState) => prevState.filter((img) => img.assetId !== item.assetId));
+    const onRemoveFile = (item) => {
+        setFiles((prevState) => prevState.filter((file) => file.assetId !== item.assetId));
+    };
+
+    const onAttachFile = async (file, messageID) => {
+        const input = {
+            storageKey: await uploadFile(file.uri),
+            type: 'IMAGE',
+            width: file.width,
+            height: file.height,
+            duration: file.duration,
+            messageID,
+            chatroomID: chatRoom.id,
+        };
+
+        return API.graphql(graphqlOperation(createAttachment, { input }));
     };
 
     const onSend = async () => {
@@ -55,34 +69,33 @@ const InputBox = ({ chatRoom }) => {
             userID,
         };
 
-        if (images.length) {
-            input.images = await Promise.all(images.map((image) => uploadFile(image.uri)));
-            setImages([]);
-        }
-
         const newMessageData = await API.graphql(graphqlOperation(createMessage, { input }));
+        const messageID = newMessageData.data.createMessage.id;
 
         setText('');
+
+        await Promise.all(files.map((file) => onAttachFile(file, messageID)));
+        setFiles([]);
 
         await API.graphql(
             graphqlOperation(updateChatRoom, {
                 input: {
                     _version: chatRoom._version,
-                    chatRoomLastMessageId: newMessageData.data.createMessage.id,
+                    chatRoomLastMessageId: messageID,
                     id: chatRoom.id,
                 },
             })
         );
     };
 
-    const renderImage = ({ item }) => {
+    const renderItem = ({ item }) => {
         return (
             <>
                 <Image source={{ uri: item.uri }} style={styles.selectedImage} resizeMode={'contain'} />
                 <MaterialIcons
                     name={'highlight-remove'}
                     size={spacings.icon}
-                    onPress={() => onRemoveImage(item)}
+                    onPress={() => onRemoveFile(item)}
                     color={'red'}
                     style={styles.removeSelectedImage}
                 />
@@ -92,9 +105,9 @@ const InputBox = ({ chatRoom }) => {
 
     return (
         <>
-            {images.length ? (
+            {files.length ? (
                 <View style={styles.attachmentController}>
-                    <FlatList horizontal data={images} renderItem={renderImage} />
+                    <FlatList horizontal data={files} renderItem={renderItem} />
                 </View>
             ) : null}
             <View style={styles.viewContainer}>

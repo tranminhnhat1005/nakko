@@ -18,7 +18,8 @@ import bg from '../../../assets/images/BG.png';
 import InputBox from '../../components/InputBox';
 import Message from '../../components/Message';
 import { spacings } from '../../configs';
-import { getChatRoom, listMessagesByChatRoom } from '../../graphql/queries';
+import { getChatRoom } from '../../graphql/queries';
+import { listMessagesByChatRoom } from './queries';
 import { onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions';
 
 const IS_IOS = Platform.OS === 'ios';
@@ -26,7 +27,6 @@ const IS_IOS = Platform.OS === 'ios';
 const ChatScreen = () => {
     const [chatRoom, setChatRoom] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
 
     const route = useRoute();
     const navigation = useNavigation();
