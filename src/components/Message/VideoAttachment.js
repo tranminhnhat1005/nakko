@@ -11,10 +11,10 @@ const VideoAttachment = ({ attachments, width }) => {
                     shouldPlay={false}
                     resizeMode={'contain'}
                     style={{
-                        paddingRight: 7,
                         width,
                         height: (attachment.height * width) / attachment.width,
                     }}
+                    videoStyle={styles.vidStyle}
                     source={{ uri: attachment.uri }}
                 />
             ))}
@@ -22,6 +22,11 @@ const VideoAttachment = ({ attachments, width }) => {
     );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    vidStyle: {
+        marginRight: 7,
+        marginBottom: 5,
+    },
+});
 
 export default VideoAttachment;

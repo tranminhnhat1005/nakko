@@ -2,7 +2,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { API, Auth, graphqlOperation, Storage } from 'aws-amplify';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { FlatList, Image, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Image, Platform, StyleSheet, TextInput, View, Text } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuid } from 'uuid';
 
@@ -37,6 +37,7 @@ const MIMETypes = {
 const InputBox = ({ chatRoom }) => {
     const [text, setText] = useState('');
     const [files, setFiles] = useState([]);
+    const [progresses, setProgresses] = useState({});
 
     const uploadFile = async (fileUri) => {
         try {
@@ -46,6 +47,12 @@ const InputBox = ({ chatRoom }) => {
             const contentType = MIMETypes[fileUri.split('.').pop()];
             await Storage.put(key, blob, {
                 contentType,
+                progressCallback: (progress) => {
+                    setProgresses((p) => ({
+                        ...p,
+                        [fileUri]: progress.loaded / progress.total,
+                    }));
+                },
             });
             return key;
         } catch (error) {
@@ -115,8 +122,20 @@ const InputBox = ({ chatRoom }) => {
 
     const renderItem = ({ item }) => {
         return (
-            <>
-                <Image source={{ uri: item.uri }} style={styles.selectedImage} resizeMode={'contain'} />
+            <View style={styles.viewPreviewContainer}>
+                <Image
+                    source={{ uri: item.uri }}
+                    style={[styles.selectedImage, { width: 120, height: (item.height * 120) / item.width }]}
+                    resizeMode={'contain'}
+                />
+                {progresses[item.uri] ? (
+                    <View style={styles.viewProgressContainer}>
+                        <View style={styles.viewProgress}>
+                            <Text style={styles.txtProgress}>{(progresses[item.uri] * 100).toFixed(0)} %</Text>
+                        </View>
+                    </View>
+                ) : null}
+
                 <MaterialIcons
                     name={'highlight-remove'}
                     size={spacings.icon}
@@ -124,7 +143,7 @@ const InputBox = ({ chatRoom }) => {
                     color={'red'}
                     style={styles.removeSelectedImage}
                 />
-            </>
+            </View>
         );
     };
 
@@ -210,6 +229,25 @@ const styles = StyleSheet.create({
         borderRadius: spacings.def,
         backgroundColor: 'whitesmoke',
         overflow: 'hidden',
+    },
+    viewPreviewContainer: {
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    viewProgressContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...StyleSheet.absoluteFillObject,
+    },
+    viewProgress: {
+        backgroundColor: '#8c8c8cAA',
+        padding: 5,
+        borderRadius: 50,
+    },
+    txtProgress: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
 
