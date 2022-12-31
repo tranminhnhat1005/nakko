@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Amplify, API, Auth, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react-native';
 import { useEffect } from 'react';
-import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 import awsConfig from './src/aws-exports';
 import AppContainerView from './src/components/AppContainerView';
