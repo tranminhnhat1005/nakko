@@ -10,6 +10,30 @@ import { colors, spacings } from '../../configs';
 import { createAttachment, createMessage, updateChatRoom } from '../../graphql/mutations';
 
 const IS_IOS = Platform.OS === 'ios';
+const types = {
+    image: 'IMAGE',
+    video: 'VIDEO',
+};
+const MIMETypes = {
+    acc: 'audio/aac',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    gif: 'image/gif',
+    jpeg: 'image/jpeg',
+    jpg: 'image/jpeg',
+    mov: 'video/quicktime',
+    mp3: 'audio/mpeg',
+    mp4: 'video/mp4',
+    pdf: 'application/pdf',
+    png: 'image/png',
+    ppt: 'application/vnd.ms-powerpoint',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    svg: 'image/svg+xml',
+    webm: 'video/webm',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    zip: 'application/zip',
+};
 const InputBox = ({ chatRoom }) => {
     const [text, setText] = useState('');
     const [files, setFiles] = useState([]);
@@ -18,9 +42,10 @@ const InputBox = ({ chatRoom }) => {
         try {
             const response = await fetch(fileUri);
             const blob = await response.blob();
-            const key = `${uuid()}.png`;
+            const key = uuid();
+            const contentType = MIMETypes[fileUri.split('.').pop()];
             await Storage.put(key, blob, {
-                contentType: 'image/png',
+                contentType,
             });
             return key;
         } catch (error) {
@@ -31,7 +56,7 @@ const InputBox = ({ chatRoom }) => {
     const onPickImage = async () => {
         // no permission request is necessary for launching the image library
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             quality: 1,
             allowsMultipleSelection: true,
         });
@@ -48,10 +73,10 @@ const InputBox = ({ chatRoom }) => {
     const onAttachFile = async (file, messageID) => {
         const input = {
             storageKey: await uploadFile(file.uri),
-            type: 'IMAGE',
+            type: types[file.type],
             width: file.width,
             height: file.height,
-            duration: file.duration,
+            duration: Math.floor(file.duration),
             messageID,
             chatroomID: chatRoom.id,
         };

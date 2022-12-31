@@ -20,7 +20,7 @@ import Message from '../../components/Message';
 import { spacings } from '../../configs';
 import { getChatRoom } from '../../graphql/queries';
 import { listMessagesByChatRoom } from './queries';
-import { onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions';
+import { onCreateMessage, onUpdateChatRoom, onCreateAttachment } from '../../graphql/subscriptions';
 
 const IS_IOS = Platform.OS === 'ios';
 
@@ -79,7 +79,34 @@ const ChatScreen = () => {
             error: (err) => console.warn(err),
         });
 
-        return () => subscription.unsubscribe();
+        // Subscribe to new attachments
+        const subscriptionAttachments = API.graphql(
+            graphqlOperation(onCreateAttachment, {
+                filter: { chatroomID: { eq: chatRoomId } },
+            })
+        ).subscribe({
+            next: ({ value }) => {
+                const newAttachment = value.data.onCreateAttachment;
+                setMessages((existingMessages) => {
+                    const messageToUpdate = existingMessages.find((em) => em.id === newAttachment.messageID);
+                    if (!messageToUpdate) {
+                        return existingMessages;
+                    }
+                    if (!messageToUpdate?.Attachments?.items) {
+                        messageToUpdate.Attachments.items = [];
+                    }
+                    messageToUpdate.Attachments.items.push(newAttachment);
+
+                    return existingMessages.map((m) => (m.id === messageToUpdate.id ? messageToUpdate : m));
+                });
+            },
+            error: (err) => console.warn(err),
+        });
+
+        return () => {
+            subscription.unsubscribe();
+            subscriptionAttachments.unsubscribe();
+        };
     }, [chatRoomId]);
 
     useEffect(() => {
